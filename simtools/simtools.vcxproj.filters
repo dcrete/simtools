@@ -11,6 +11,9 @@
     <Filter Include="Header Files\algorithms">
       <UniqueIdentifier>{6188c143-9f7e-4c29-a2c2-069439ba1892}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\sandbox">
+      <UniqueIdentifier>{2f3006fb-7174-43c7-9122-6f9181c5d39c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="matrix.hpp">
@@ -29,6 +32,15 @@
       <Filter>Header Files\types</Filter>
     </ClInclude>
     <ClInclude Include="io.hpp">
+      <Filter>Header Files\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="factory.hpp">
+      <Filter>Header Files\algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="simtools_config.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="comparators.hpp">
       <Filter>Header Files\algorithms</Filter>
     </ClInclude>
   </ItemGroup>

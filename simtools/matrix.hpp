@@ -5,13 +5,13 @@
 #include <array>
 #include <functional>
 #include <type_traits>
+#include "simtools_config.hpp"
 
 namespace simtools {
 
-    using ndim_t = size_t;
 
     namespace detail {
-        template<typename T, ndim_t N>
+        template<typename T, dim_t N>
         struct matrix_types {
             using inner = typename matrix_types<T, N - 1>::type;
             using type = typename std::vector<inner>;
@@ -24,8 +24,9 @@ namespace simtools {
         };
     }
 
-    template<ndim_t N> using matrix = typename detail::matrix_types<double, N>::type;
-    template<ndim_t N> using axis_array = typename std::array<matrix<1>, N>;
+    template<typename T, dim_t N> using base_matrix = typename detail::matrix_types<T, N>::type;
+    template<dim_t N> using matrix = typename base_matrix<double, N>;
+    template<dim_t N> using axis_array = typename std::array<matrix<1>, N>;
 }
 
 #endif // SIMTOOLS_MATRIX_HPP

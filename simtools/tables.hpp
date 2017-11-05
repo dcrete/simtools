@@ -1,9 +1,10 @@
-#ifndef SIMTOOLS_TABLEMAP_HPP
-#define SIMTOOLS_TABLEMAP_HPP
+#ifndef SIMTOOLS_TABLES_HPP
+#define SIMTOOLS_TABLES_HPP
 
-#include <string>
 #include <map>
 #include <memory>
+#include <string>
+#include "simtools_config.hpp"
 #include "interpolator.hpp"
 
 namespace simtools {
@@ -12,18 +13,11 @@ namespace simtools {
 
     class table { };
 
-    template<ndim_t N>
+    template<dim_t N>
     class data_table : public table
     {
     public:
-        data_table() = default;
-        data_table(const data_table&) = default;
-        data_table(data_table&&) = default;
-
-        data_table(axis_array<N>&& axes, matrix<N>&& data)
-            : m_axes(axes),
-            m_data(data)
-        {
+        data_table(axis_array<N>&& axes, matrix<N>&& data) : m_axes(axes), m_data(data) {
         }
 
         void load(axis_array<N>&& vars, matrix<N>&& data) {
@@ -55,15 +49,15 @@ namespace simtools {
     {
         using table_pointer = std::unique_ptr<table>;
         using table_map = std::map<TKey, table_pointer>;
-        using dimensioned_table_map = std::map<ndim_t, table_map>;
+        using dimensioned_table_map = std::map<dim_t, table_map>;
 
     public:
-        template<ndim_t N>
+        template<dim_t N>
         void push(std::string name, const data_table<N>& table) {
             this->m_map[N][name] = table_pointer(new data_table<N>(std::forward<data_table<N>>(table)));
         }
 
-        template<ndim_t N>
+        template<dim_t N>
         void emplace(std::string name, data_table<N>&& table) {
             this->m_map[N][name] = table_pointer(new data_table<N>(std::forward<data_table<N>>(table)));
         }
@@ -81,4 +75,4 @@ namespace simtools {
 
 }
 
-#endif // SIMTOOLS_TABLEMAP_HPP
+#endif // SIMTOOLS_TABLES_HPP

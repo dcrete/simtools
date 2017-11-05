@@ -3,3 +3,18 @@
 ################################################################################
 
 /.vs
+/Debug
+/simtools/Debug
+/simtools/x64/Release
+/x64/Release
+/tests/x64/Release
+/tests/Debug
+/simtools/Release
+/Release
+/tests/Release
+*.tlog
+*.obj
+*.log
+*.idb
+*.pdb
+*.xml

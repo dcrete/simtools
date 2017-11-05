@@ -83,6 +83,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath)</IncludePath>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -165,7 +166,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="algorithms.hpp" />
+    <ClInclude Include="factory.hpp" />
+    <ClInclude Include="comparators.hpp" />
     <ClInclude Include="io.hpp" />
+    <ClInclude Include="simtools_config.hpp" />
     <ClInclude Include="tuple_math.hpp" />
     <ClInclude Include="interpolator.hpp" />
     <ClInclude Include="matrix.hpp" />

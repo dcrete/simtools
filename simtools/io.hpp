@@ -5,81 +5,78 @@
 #include <vector>
 #include <array>
 #include <sstream>
-#include <tuple>
+#include <ostream>
+#include <istream>
+#include "simtools_config.hpp"
 #include "matrix.hpp"
 
 namespace simtools {
 
-    template<ndim_t N>
-    inline void print(std::ostream& stream, const matrix<N>& mat) {
-        for (auto i = 0U; i < mat.size(); ++i) {
-            stream << format("// %i-D (%i)", N, i) << "\n";
-            print<N - 1>(stream, data[i]);
-        }
-    }
-
-    template<>
-    inline void print<1>(std::ostream& stream, const matrix<1>& mat) {
-        for (auto& value : mat) {
-            stream << value;
+    template<typename T>
+    inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& data) {
+        for (auto i = 0U; i < data.size(); ++i) {
+            if (i > 0) {
+                stream << " ";
+            }
+            stream << data[i];
         }
         stream << "\n";
+        return stream;
     }
 
-    template<>
-    inline void print<2>(std::ostream& stream, const matrix<2>& mat) {
-        for (auto& row : mat) {
-            print<1>(stream, row);
+    template<typename T, dim_t N>
+    inline std::ostream& operator<<(std::ostream& stream, const base_matrix<T, N>& data) {
+        for (auto i = 0U; i < data.size(); ++i) {
+            if constexpr (N > 2) {
+                stream << "// " << std::to_string(N) << "-D (" << std::to_string(i) << ")" << "\n";
+            }
+            stream << data[i];
+        }
+        return stream;
+    }
+
+    template<dim_t N>
+    inline std::ostream& operator<<(std::ostream& stream, const axis_array<N>& axes) {
+        for (auto i = 0U; i < N; ++i) {
+            stream << "Dim" << std::to_string(i) << " = " << axes[i] << "\n";
         }
     }
 
-    template<ndim_t N>
-    inline std::string to_string(const matrix<N>& mat) {
-        auto ss = std::ostringstream();
-        print(ss, mat);
+    template<dim_t N>
+    inline std::string to_string(const matrix<N>& data) {
+        std::ostringstream ss;
+        ss << data;
         return ss.str();
     }
 
-    template<ndim_t N>
-    inline void print(std::ostream& stream, const axis_array<N>& axes) {
-        for (auto i = 0U; i < N; ++i) {
-            stream << "Dim" << std::to_string(i) << " = " << to_string(stream, axes[i]) << "\n";
+    template<dim_t N>
+    inline void read(std::istream& stream, matrix<N>& data) {
+        if constexpr (N == 1) {
+            data.clear();
+            while (!stream.eof()) {
+                auto value = 0.0;
+                stream >> value;
+                data.emplace_back(value);
+            }
+        }
+        else {
+            for (auto& row : data) {
+                if constexpr (N > 2) {
+                    std::string _;
+                    std::getline(stream, _);
+                }
+                read<N - 1>(stream, row);
+            }
         }
     }
 
-    template<ndim_t N>
-    inline void read(std::istream& stream, matrix<N>& mat) {
-        for (auto& row : mat) {
-            std::string dummy;
-            std::getline(stream, dummy);
-            read<N - 1>(stream, row);
-        }
-    }
-
-    template<>
-    inline void read<2>(std::istream& stream, matrix<2>& mat) {
-        for (auto& row : mat) {
-            read<1>(stream, row);
-        }
-    }
-
-    template<>
-    inline void read<1>(std::istream& stream, matrix<1>& mat) {
-        mat.clear();
-        while (!stream.eof()) {
-            auto value = 0.0;
-            stream >> value;
-            mat.emplace_back(value);
-        }
-    }
-
-    template<ndim_t N>
+    template<dim_t N>
     inline void read(std::istream& stream, axis_array<N>& axes) {
-        for (auto i = 0U; i < N; ++i) {
+        for (auto& axis : axes) {
             std::string line;
             std::getline(stream, line);
-            auto ss = std::istringstream(line.substr(line.find('=') + 1);
-            read(ss, axes[i]);
+            std::istringstream stream(line.substr(line.find('=') + 1));
+            read(stream, axis);
         }
     }
 }
