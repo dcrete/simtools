@@ -18,7 +18,7 @@
     <ClInclude Include="test_config.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="test_in_bounds.h">
+    <ClInclude Include="test_interpolation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -33,6 +33,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test_comparators.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_table_lookup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

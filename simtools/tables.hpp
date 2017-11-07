@@ -16,11 +16,14 @@ namespace simtools {
     template<dim_t N>
     class data_table : public table
     {
-    public:
-        data_table(axis_array<N>&& axes, matrix<N>&& data) : m_axes(axes), m_data(data) {
-        }
+        using axis_array_type = axis_array<N>;
+        using matrix_type = matrix<N>;
 
-        void load(axis_array<N>&& vars, matrix<N>&& data) {
+    public:
+        data_table(const axis_array_type& axes, const matrix_type& data) : m_axes(axes), m_data(data) { }
+        data_table(axis_array_type&& axes, matrix_type&& data) : m_axes(axes), m_data(data) { }
+
+        void load(axis_array_type&& vars, matrix_type&& data) {
             this->m_axes = vars;
             this->m_data = data;
         }
@@ -30,17 +33,17 @@ namespace simtools {
             return interpolate<N>(this->m_data, this->m_searches);
         }
 
-        const matrix<N>* const data() const {
+        const matrix_type* const data() const {
             return &this->m_data;
         }
 
-        const axis_array<N>* const axes() const {
+        const axis_array_type* const axes() const {
             return &this->m_axes;
         }
 
     private:
-        matrix<N> m_data;
-        axis_array<N> m_axes;
+        matrix_type m_data;
+        axis_array_type m_axes;
         mutable std::vector<axis_search_result> m_searches = std::vector<axis_search_result>(N);
     };
 
@@ -62,11 +65,15 @@ namespace simtools {
             this->m_map[N][name] = table_pointer(new data_table<N>(std::forward<data_table<N>>(table)));
         }
 
+        template<dim_t N>
+        double look_up(const TKey& name, const std::array<double, N>& targets) const {
+            auto table = static_cast<const data_table<N>* const>(this->m_map.at(N).at(name).get());
+            return table->get_value(targets);
+        }
+
         template<typename... TVal>
         double look_up(const TKey& name, TVal... targets) const {
-            constexpr auto N = sizeof...(TVal);
-            auto table = static_cast<const data_table<N>* const>(this->m_map.at(N).at(name).get());
-            return table->get_value({ static_cast<double>(targets)... });
+            return this->look_up<sizeof...(TVal)>({ static_cast<double>(targets)... });
         }
 
     private:

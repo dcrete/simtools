@@ -105,6 +105,8 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <CompileAs>CompileAsCpp</CompileAs>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,6 +130,7 @@
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <CompileAs>CompileAsCpp</CompileAs>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,6 +154,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <CompileAs>CompileAsCpp</CompileAs>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -188,10 +192,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="test_in_bounds.h" />
+    <ClInclude Include="test_interpolation.h" />
     <ClInclude Include="test_config.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="test_table_lookup.cpp" />
     <ClCompile Include="test_comparators.cpp" />
     <ClCompile Include="test_factory.cpp" />
     <ClCompile Include="test_algorithms.cpp" />

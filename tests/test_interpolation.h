@@ -3,6 +3,7 @@
 
 #include <array>
 #include <random>
+#include <chrono>
 #include "simtools/matrix.hpp"
 #include "simtools/tuple_math.hpp"
 #include "simtools/algorithms.hpp"
@@ -17,10 +18,10 @@ namespace simtools { namespace tests {
     using namespace std::chrono;
     
     namespace detail {
-        inline matrix<1> gen_breakpoints(const matrix<1>& var_values) {
+        inline auto make_breakpoint_set(const matrix<1>& var_values) {
             auto min = *std::min_element(var_values.begin(), var_values.end());
             auto max = *std::max_element(var_values.begin(), var_values.end());
-            auto result = matrix<1>{ /*0.95*min, 1.05*max*/ };
+            matrix<1> result{ };
             std::random_device rd;
             std::mt19937 eng(rd());
             std::uniform_real_distribution<> dist(min, max);
@@ -35,6 +36,7 @@ namespace simtools { namespace tests {
     class polynomial_generator
     {
     public:
+        polynomial_generator() = default;
         polynomial_generator(const array<double, N>& coefs) : m_coef(coefs) { }
         double get_value(const array<double, N>& values) const {
             auto multiply_tuple_elems = [](auto& t) {return simtools::multiply<double, double>(t);};
@@ -63,10 +65,10 @@ namespace simtools { namespace tests {
     }
 
     template<dim_t N>
-    inline std::vector<std::array<double, N>> gen_breakpoints(const axis_array<N>& axes) {
-        auto breakpoint_vectors = axis_array<N>();
+    inline std::vector<std::array<double, N>> make_breakpoint_set_permutations(const axis_array<N>& axes) {
+        axis_array<N> breakpoint_vectors;
         for (auto i = 0U; i < N; ++i) {
-            breakpoint_vectors[i] = detail::gen_breakpoints(axes[i]);
+            breakpoint_vectors[i] = detail::make_breakpoint_set(axes[i]);
         }
         return simtools::get_permutations(breakpoint_vectors);
     }
@@ -74,7 +76,7 @@ namespace simtools { namespace tests {
     inline auto make_range(dim_t n, double start, double end) {
         auto inc = (end - start) / static_cast<double>(n);
         auto x = start - inc;
-        auto results = std::vector<double>(n);
+        std::vector<double> results(n);
         for (auto& v : results) {
             v = (x += inc);
         }
@@ -92,38 +94,6 @@ namespace simtools { namespace tests {
         }
     }
 
-    template<typename T>
-    inline T& operator+=(T& left, std::common_type_t<nanoseconds, nanoseconds>&& dt) {
-        left += static_cast<T>(duration_cast<nanoseconds>(dt).count());
-        return left;
-    }
-
-    template<dim_t N>
-    inline void run_test(axis_array<N> vars, const std::array<double, N>& coefs) {
-        constexpr auto THRESHOLD = 1.0E-12;
-
-        polynomial_generator<N> gen(coefs);
-        simtools::data_table<N> table(std::move(vars), get_values(vars, gen));
-        auto bp = gen_breakpoints(vars);
-        auto elapsed = 0.0;
-        for (auto&& v : bp) {
-            auto start = high_resolution_clock::now();
-            auto result = table.get_value(v);
-            auto x = high_resolution_clock::now() - start;
-            elapsed += (high_resolution_clock::now() - start);
-            auto expected = gen.get_value(v);
-            Assert::AreEqual(expected, result, THRESHOLD);
-        }
-        auto num_1d_interpolations = bp.size()*calc_1d_interp_count<N>();
-        auto ss = std::ostringstream();
-        ss << "\n\n";
-        ss << "Test_" << N << "D Details:" << "\n";
-        ss << "\t" << "# of 1-D Interpolations: " << num_1d_interpolations << "\n";
-        ss << "\t" << "Total Elapsed time (nanoseconds): " << elapsed << "\n";
-        ss << "\t" << "Efficiency (nanosecond/interpolation): " << elapsed / num_1d_interpolations << "\n";
-        ss << "\n\n";
-        Logger::WriteMessage(ss.str().c_str());
-    }
 } }
 
 #endif // SIMTOOLS_TESTS_DETAIL_HPP
