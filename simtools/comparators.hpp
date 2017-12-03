@@ -5,15 +5,15 @@
 #include <functional>
 #include "simtools_config.hpp"
 
-namespace simtools { namespace comp {
-
-    namespace detail {
-        template<typename T, typename Comparison>
-        constexpr inline auto make_comparer(const T& left) {
-            Comparison comp;
-            return [&](const auto& right) { return comp(left, right); };
-        }
+namespace simtools::comp::detail {
+    template<typename T, typename Comparison>
+    constexpr inline auto make_comparer(const T& left) {
+        Comparison comp;
+        return [&](const auto& right) { return comp(left, right); };
     }
+}
+
+namespace simtools::comp {
 
     template<typename T>
     constexpr inline auto less_than(const T& left) {
@@ -50,7 +50,6 @@ namespace simtools { namespace comp {
         using comparison_type = typename std::not_equal_to<T>;
         return detail::make_comparer<T, comparison_type>(left);
     }
-
-} }
+}
 
 #endif // SIMTOOLS_COMPARATORS_HPP

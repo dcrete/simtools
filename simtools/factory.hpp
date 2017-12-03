@@ -7,7 +7,7 @@
 #include "matrix.hpp"
 #include "tuple_math.hpp"
 
-namespace simtools { namespace factory {
+namespace simtools::factory {
 
     template<dim_t N>
     constexpr inline matrix<N> make_matrix(std::vector<dim_t>::const_iterator it) {
@@ -39,6 +39,6 @@ namespace simtools { namespace factory {
         return { static_cast<T1>(vars)... };
     }
 
-} }
+}
 
 #endif // SIMTOOLS_FACTORY_HPP

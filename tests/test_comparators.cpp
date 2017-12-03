@@ -2,7 +2,7 @@
 #include "test_config.hpp"
 #include "simtools/comparators.hpp"
 
-namespace simtools { namespace tests {
+namespace simtools::tests {
     using namespace simtools::comp;
 
     TEST_CLASS(test_comparators)
@@ -50,4 +50,4 @@ namespace simtools { namespace tests {
             Assert::IsTrue(result);
         }
     };
-} }
+}

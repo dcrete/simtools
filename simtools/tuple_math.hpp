@@ -59,7 +59,6 @@ namespace simtools {
     constexpr inline auto subtract(const Tuple& t) {
         return subtract(std::get<0>(t), std::get<1>(t));
     }
-
 }
 
 #endif // SIMTOOLS_TUPLE_MATH_HPP
