@@ -28,7 +28,7 @@ namespace simtools {
             this->m_data = data;
         }
 
-        double get_value(const std::array<double, N>& targets) const {
+        double_t get_value(const std::array<double_t, N>& targets) const {
             search_axes(this->m_searches, this->m_axes, targets);
             return interpolate<N>(this->m_data, this->m_searches);
         }
@@ -66,14 +66,14 @@ namespace simtools {
         }
 
         template<dim_t N>
-        double look_up(const TKey& name, const std::array<double, N>& targets) const {
+        double_t look_up(const TKey& name, const std::array<double_t, N>& targets) const {
             auto table = static_cast<const data_table<N>* const>(this->m_map.at(N).at(name).get());
             return table->get_value(targets);
         }
 
         template<typename... TVal>
-        double look_up(const TKey& name, TVal... targets) const {
-            return this->look_up<sizeof...(TVal)>({ static_cast<double>(targets)... });
+        double_t look_up(const TKey& name, TVal... targets) const {
+            return this->look_up<sizeof...(TVal)>({ static_cast<double_t>(targets)... });
         }
 
     private:

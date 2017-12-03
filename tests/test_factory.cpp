@@ -1,8 +1,7 @@
-
 #include "test_config.hpp"
 #include "simtools/factory.hpp"
 
-namespace simtools { namespace tests {
+namespace simtools::tests {
 
     TEST_CLASS(test_factory)
     {
@@ -25,17 +24,17 @@ namespace simtools { namespace tests {
 
         TEST_METHOD(make_array_from_func)
         {
-            auto expected = std::array<double, 3>{1, 2, 3};
-            auto func = [](dim_t index) { return static_cast<double>(index + 1); };
-            auto result = simtools::factory::make_array<double, 3>(func);
+            auto expected = std::array<double_t, 3>{1, 2, 3};
+            auto func = [](dim_t index) { return static_cast<double_t>(index + 1); };
+            auto result = simtools::factory::make_array<double_t, 3>(func);
             Assert::IsTrue(expected == result);
         }
 
         TEST_METHOD(make_array_from_args)
         {
-            auto expected = std::array<double, 3>{1, 2, 3};
-            auto result = simtools::factory::make_array<double>(expected[0], expected[1], expected[2]);
+            auto expected = std::array<double_t, 3>{1, 2, 3};
+            auto result = simtools::factory::make_array<double_t>(expected[0], expected[1], expected[2]);
             Assert::IsTrue(expected == result);
         }
     };
-} }
+}

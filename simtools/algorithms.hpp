@@ -11,59 +11,60 @@
 #include "tuple_math.hpp"
 #include "factory.hpp"
 
+namespace simtools::detail {
+    class index_repeater
+    {
+    public:
+        constexpr void set_max_size(dim_t max_size) {
+            this->m_max = max_size;
+        }
+
+        constexpr dim_t current() const {
+            return this->m_current;
+        }
+
+        constexpr dim_t increment(dim_t inc) {
+            this->m_current += inc;
+            if (this->m_current < this->m_max) return static_cast<dim_t>(false);
+            this->m_current = 0;
+            return static_cast<dim_t>(true);
+        }
+
+    private:
+        dim_t m_max = 0;
+        dim_t m_current = 0;
+    };
+
+    template<dim_t N>
+    class n_dim_indexer
+    {
+    public:
+        constexpr n_dim_indexer(std::array<dim_t, N> max_sizes) {
+            for (auto i = 0U; i < N; ++i) {
+                this->m_indices[i].set_max_size(max_sizes[i]);
+            }
+        }
+
+        constexpr n_dim_indexer& operator++() {
+            static_assert(N > 0, "N must be greater than 0");
+            auto inc = static_cast<dim_t>(1);
+            constexpr auto start = static_cast<int>(N - 1);
+            for (auto i = start; i >= 0; --i) {
+                inc = this->m_indices[i].increment(inc);
+            }
+            return *this;
+        }
+
+        constexpr dim_t operator[](dim_t index) const {
+            return this->m_indices[index].current();
+        }
+
+    private:
+        std::array<index_repeater, N> m_indices;
+    };
+}
+
 namespace simtools {
-    namespace detail {
-        class index_repeater
-        {
-        public:
-            constexpr void set_max_size(dim_t max_size) {
-                this->m_max = max_size;
-            }
-
-            constexpr dim_t current() const {
-                return this->m_current;
-            }
-
-            constexpr dim_t increment(dim_t inc) {
-                this->m_current += inc;
-                if (this->m_current < this->m_max) return static_cast<dim_t>(false);
-                this->m_current = 0;
-                return static_cast<dim_t>(true);
-            }
-
-        private:
-            dim_t m_max = 0;
-            dim_t m_current = 0;
-        };
-
-        template<dim_t N>
-        class n_dim_indexer
-        {
-        public:
-            constexpr n_dim_indexer(std::array<dim_t, N> max_sizes) {
-                for (auto i = 0U; i < N; ++i) {
-                    this->m_indices[i].set_max_size(max_sizes[i]);
-                }
-            }
-
-            constexpr n_dim_indexer& operator++() {
-                static_assert(N > 0, "N must be greater than 0");
-                auto inc = static_cast<dim_t>(1);
-                constexpr auto start = static_cast<int>(N - 1);
-                for (auto i = start; i >= 0; --i) {
-                    inc = this->m_indices[i].increment(inc);
-                }
-                return *this;
-            }
-
-            constexpr dim_t operator[](dim_t index) const {
-                return this->m_indices[index].current();
-            }
-
-        private:
-            std::array<index_repeater, N> m_indices;
-        };
-    }
 
     template<typename T, dim_t N>
     constexpr inline std::vector<T> to_vector(const std::array<T, N>& arr) {
@@ -100,6 +101,21 @@ namespace simtools {
             result[i] = tuple_type(left[i], right[i]);
         }
         return result;
+    }
+
+    template<typename It1, typename It2>
+    constexpr auto zip_its(It1 begin1, It1 end1, It2 begin2, It2 end2) -> std::vector<std::tuple<It1, It2>> {
+        auto it1 = begin1;
+        auto it2 = begin2;
+        auto increment = [](auto& current, auto& end) { if (current != end) ++current; };
+        std::vector<std::tuple<It1, It2>> pairs;
+        for (;;) {
+            pairs.emplace_back(std::make_tuple(it1, it2));
+            increment(it1, end1);
+            increment(it2, end2);
+            if (it1 == end1 && it2 == end2) break;
+        }
+        return pairs;
     }
 
     template<typename Out, typename It, typename F>
@@ -143,15 +159,15 @@ namespace simtools {
     }
 
     template<dim_t N>
-    constexpr inline std::vector<std::array<double, N>> get_permutations(const axis_array<N>& axes) {
+    constexpr inline std::vector<std::array<double_t, N>> get_permutations(const axis_array<N>& axes) {
         auto func = [](dim_t index, const matrix<1>& vars) { return vars[index]; };
-        return detail::get_permutations<N, double>(axes, func);
+        return detail::get_permutations<N, double_t>(axes, func);
     }
 
     template<dim_t N>
-    constexpr inline std::vector<std::array<std::tuple<dim_t, double>, N>> get_permutations_with_indices(const axis_array<N>& axes) {
+    constexpr inline std::vector<std::array<std::tuple<dim_t, double_t>, N>> get_permutations_with_indices(const axis_array<N>& axes) {
         auto func = [](dim_t index, const matrix<1>& vars) { return std::make_tuple(index, vars[index]); };
-        return detail::get_permutations<N, std::tuple<dim_t, double>>(axes, func);
+        return detail::get_permutations<N, std::tuple<dim_t, double_t>>(axes, func);
     }
 
     template<dim_t N>
@@ -175,7 +191,7 @@ namespace simtools {
     }
 
     template<dim_t N>
-    constexpr void set_value(matrix<N>& m, std::array<dim_t, N> indices, double value) {
+    constexpr void set_value(matrix<N>& m, std::array<dim_t, N> indices, double_t value) {
         get_ref(m, indices) = value;
     }
 

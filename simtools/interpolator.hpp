@@ -13,10 +13,10 @@ namespace simtools {
     {
         size_t lower = 0;
         size_t upper = 0;
-        double slope = 0.0;
+        double_t slope = 0.0;
     };
 
-    inline void search(const matrix<1>& ind_var, axis_search_result& result, double target) {
+    inline void search(const matrix<1>& ind_var, axis_search_result& result, double_t target) {
         if (ind_var.size() < 2) {
             return;
         }
@@ -60,12 +60,12 @@ namespace simtools {
     }
 
     template<dim_t N>
-    inline double interpolate(const matrix<N>& data, const std::vector<axis_search_result>& axes) {
+    inline double_t interpolate(const matrix<N>& data, const std::vector<axis_search_result>& axes) {
         return detail::interpolate<N>(data, axes.begin());
     }
 
     template<dim_t N>
-    inline void search_axes(std::vector<axis_search_result>& searches, const axis_array<N>& axes, const std::array<double, N>& targets) {
+    inline void search_axes(std::vector<axis_search_result>& searches, const axis_array<N>& axes, const std::array<double_t, N>& targets) {
         for (auto i = 0U; i < N; ++i) {
             search(axes[i], searches[i], targets[i]);
         }

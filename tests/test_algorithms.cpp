@@ -2,14 +2,14 @@
 #include "test_config.hpp"
 #include "simtools/algorithms.hpp"
 
-namespace simtools { namespace tests {
+namespace simtools::tests {
 
     TEST_CLASS(test_algorithms)
     {
     public:
         TEST_METHOD(to_vector)
         {
-            auto array_values = std::array<double, 5>{1.3, 2.6, 23.5, 355.0, 29394.2};
+            auto array_values = std::array<double_t, 5>{1.3, 2.6, 23.5, 355.0, 29394.2};
             auto result = simtools::to_vector(array_values);
             Assert::IsTrue(array_values == result);
         }
@@ -57,6 +57,20 @@ namespace simtools { namespace tests {
             Assert::IsTrue(result == expected);
         }
 
+        TEST_METHOD(zip_its)
+        {
+            constexpr auto N = 5;
+            using array_type = std::array<int, N>;
+            array_type set1{ 1, 2, 3, 4, 5 };
+            array_type set2{ 1, 2, 3, 4, 5 };
+            std::vector<std::tuple<array_type::iterator, array_type::iterator>> expected;
+            for (auto i = 0; i < N; ++i) {
+                expected.emplace_back(std::make_tuple(set1.begin() + i, set2.begin() + i));
+            }
+            auto result = simtools::zip_its(set1.begin(), set1.end(), set2.begin(), set2.end());
+            Assert::IsTrue(result == expected);
+        }
+
         TEST_METHOD(transform)
         {
             auto expected = std::vector<int>{ 2*1, 2*2, 2*3, 2*4, 2*5 };
@@ -83,8 +97,8 @@ namespace simtools { namespace tests {
 
         TEST_METHOD(get_permutations)
         {
-            auto axes = axis_array<2>{ matrix<1>{1, 2}, matrix<1>{3, 4, 5} };
-            auto expected = std::vector<std::array<double, 2>>
+            axis_array<2> axes{ matrix<1>{1, 2}, matrix<1>{3, 4, 5} };
+            std::vector<std::array<double_t, 2>> expected
             {
                 {{ axes[0][0], axes[1][0] }},
                 {{ axes[0][0], axes[1][1] }},
@@ -99,8 +113,8 @@ namespace simtools { namespace tests {
 
         TEST_METHOD(get_permutations_with_indices)
         {
-            auto axes = axis_array<2>{ matrix<1>{1, 2}, matrix<1>{3, 4, 5} };
-            auto expected = std::vector<std::array<std::tuple<dim_t, double>, 2>>
+            axis_array<2> axes{ matrix<1>{1, 2}, matrix<1>{3, 4, 5} };
+            std::vector<std::array<std::tuple<dim_t, double_t>, 2>> expected
             {
                 { { {0, axes[0][0]}, {0, axes[1][0]} } },
                 { { {0, axes[0][0]}, {1, axes[1][1]} } },
@@ -115,7 +129,7 @@ namespace simtools { namespace tests {
 
         TEST_METHOD(get_ref)
         {
-            auto data = matrix<2>
+            matrix<2> data
             {
                 matrix<1>{1, 2, 3},
                 matrix<1>{4, 5, 6},
@@ -128,7 +142,7 @@ namespace simtools { namespace tests {
 
         TEST_METHOD(set_value)
         {
-            auto data = matrix<2>
+            matrix<2> data
             {
                 matrix<1>{1, 2, 3},
                 matrix<1>{4, 5, 6},
@@ -141,20 +155,20 @@ namespace simtools { namespace tests {
 
         TEST_METHOD(matrix_equal)
         {
-            auto data1 = matrix<2>
+            matrix<2> data1
             {
                 matrix<1>{1, 2, 3},
                 matrix<1>{4, 5, 6},
                 matrix<1>{7, 8, 9}
             };
-            auto data2 = matrix<2>
+            matrix<2> data2
             {
                 matrix<1>{1, 2, 3},
                 matrix<1>{4, 5, 6},
                 matrix<1>{7, 8, 9}
             };
             Assert::IsTrue(data1 == data2);
-            auto data3 = matrix<2>
+            matrix<2> data3
             {
                 matrix<1>{1, 2, 3},
                 matrix<1>{4, 5, 6},
@@ -164,20 +178,20 @@ namespace simtools { namespace tests {
 
         TEST_METHOD(matrix_not_equal)
         {
-            auto data1 = matrix<2>
+            matrix<2> data1
             {
                 matrix<1>{1, 2, 3},
                 matrix<1>{4, 5, 6},
                 matrix<1>{7, 8, 9}
             };
-            auto data2 = matrix<2>
+            matrix<2> data2
             {
                 matrix<1>{1, 2, 3},
                 matrix<1>{4, 5, 6},
                 matrix<1>{7, 8, 9}
             };
             Assert::IsFalse(data1 != data2);
-            auto data3 = matrix<2>
+            matrix<2> data3
             {
                 matrix<1>{1, 2, 3},
                 matrix<1>{4, 5, 6},
@@ -185,4 +199,4 @@ namespace simtools { namespace tests {
             Assert::IsTrue(data1 != data3);
         }
     };
-} }
+}

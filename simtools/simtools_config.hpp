@@ -11,8 +11,8 @@
 #endif
 
 namespace simtools {
-
-    using dim_t = unsigned int;
+    using dim_t = std::size_t;
+    using double_t = std::double_t;
 }
 
 #endif // SIMTOOLS_CONFIG_HPP

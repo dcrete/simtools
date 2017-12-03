@@ -3,10 +3,10 @@
 #include "simtools/tables.hpp"
 #include "test_interpolation.h"
 
-namespace simtools { namespace tests {
+namespace simtools::tests {
 
     template<dim_t N>
-    inline void run_test(axis_array<N> axes, const std::array<double, N>& coefs, double threshold = 1.0E-12) {
+    inline void run_test(axis_array<N> axes, const std::array<double_t, N>& coefs, double_t threshold = 1.0E-12) {
         polynomial_generator<N> gen(coefs);
         simtools::data_table<N> table(axes, get_values(axes, gen));
         auto breakpoint_permutations = make_breakpoint_set_permutations(axes);
@@ -14,7 +14,7 @@ namespace simtools { namespace tests {
         for (auto& breakpoints : breakpoint_permutations) {
             auto start = high_resolution_clock::now();
             auto result = table.get_value(breakpoints);
-            elapsed += static_cast<double>(duration_cast<nanoseconds>(high_resolution_clock::now() - start).count());
+            elapsed += static_cast<double_t>(duration_cast<nanoseconds>(high_resolution_clock::now() - start).count());
             auto expected = gen.get_value(breakpoints);
             Assert::AreEqual(expected, result, threshold);
         }
@@ -37,7 +37,7 @@ namespace simtools { namespace tests {
         {
             constexpr auto N = 1;
             using axis_array_type = axis_array<N>;
-            using coef_array_type = std::array<double, N>;
+            using coef_array_type = std::array<double_t, N>;
 
             auto vars = axis_array_type
             {
@@ -51,7 +51,7 @@ namespace simtools { namespace tests {
         {
             constexpr auto N = 2;
             using axis_array_type = axis_array<N>;
-            using coef_array_type = std::array<double, N>;
+            using coef_array_type = std::array<double_t, N>;
 
             auto vars = axis_array_type
             {
@@ -66,7 +66,7 @@ namespace simtools { namespace tests {
         {
             constexpr auto N = 3;
             using axis_array_type = axis_array<N>;
-            using coef_array_type = std::array<double, N>;
+            using coef_array_type = std::array<double_t, N>;
 
             auto vars = axis_array_type
             {
@@ -82,7 +82,7 @@ namespace simtools { namespace tests {
         {
             constexpr auto N = 4;
             using axis_array_type = axis_array<N>;
-            using coef_array_type = std::array<double, N>;
+            using coef_array_type = std::array<double_t, N>;
 
             auto vars = axis_array_type
             {
@@ -99,7 +99,7 @@ namespace simtools { namespace tests {
         {
             constexpr auto N = 9;
             using axis_array_type = axis_array<N>;
-            using coef_array_type = std::array<double, N>;
+            using coef_array_type = std::array<double_t, N>;
 
             auto vars = axis_array_type
             {
@@ -117,4 +117,4 @@ namespace simtools { namespace tests {
             run_test(vars, coefs);
         }
 	};
-} }
+}

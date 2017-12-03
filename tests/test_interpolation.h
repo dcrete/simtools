@@ -37,19 +37,19 @@ namespace simtools { namespace tests {
     {
     public:
         polynomial_generator() = default;
-        polynomial_generator(const array<double, N>& coefs) : m_coef(coefs) { }
-        double get_value(const array<double, N>& values) const {
-            auto multiply_tuple_elems = [](auto& t) {return simtools::multiply<double, double>(t);};
-            auto pairs = simtools::zip<double, double, N>(m_coef, values);
-            auto multiplied_values = simtools::transform<double>(pairs.begin(), pairs.end(), multiply_tuple_elems);
+        polynomial_generator(const array<double_t, N>& coefs) : m_coef(coefs) { }
+        double_t get_value(const array<double_t, N>& values) const {
+            auto multiply_tuple_elems = [](auto& t) {return simtools::multiply<double_t, double_t>(t);};
+            auto pairs = simtools::zip<double_t, double_t, N>(m_coef, values);
+            auto multiplied_values = simtools::transform<double_t>(pairs.begin(), pairs.end(), multiply_tuple_elems);
             return simtools::sum(multiplied_values);
         }
-        double get_value(const array<std::tuple<dim_t, double>, N>& values) const {
-            return get_value(simtools::splice<double>(values));
+        double_t get_value(const array<std::tuple<dim_t, double_t>, N>& values) const {
+            return get_value(simtools::splice<double_t>(values));
         }
 
     private:
-        array<double, N> m_coef;
+        array<double_t, N> m_coef;
     };
 
     template<dim_t N>
@@ -58,14 +58,14 @@ namespace simtools { namespace tests {
         auto data = simtools::factory::make_matrix(simtools::get_sizes(axes));
         for (auto i = 0U; i < permutations.size(); ++i) {
             auto indices = simtools::splice<dim_t>(permutations[i]);
-            auto values = simtools::splice<double>(permutations[i]);
+            auto values = simtools::splice<double_t>(permutations[i]);
             simtools::set_value(data, indices, gen.get_value(values));
         }
         return data;
     }
 
     template<dim_t N>
-    inline std::vector<std::array<double, N>> make_breakpoint_set_permutations(const axis_array<N>& axes) {
+    inline std::vector<std::array<double_t, N>> make_breakpoint_set_permutations(const axis_array<N>& axes) {
         axis_array<N> breakpoint_vectors;
         for (auto i = 0U; i < N; ++i) {
             breakpoint_vectors[i] = detail::make_breakpoint_set(axes[i]);
@@ -73,10 +73,10 @@ namespace simtools { namespace tests {
         return simtools::get_permutations(breakpoint_vectors);
     }
 
-    inline auto make_range(dim_t n, double start, double end) {
-        auto inc = (end - start) / static_cast<double>(n);
+    inline auto make_range(dim_t n, double_t start, double_t end) {
+        auto inc = (end - start) / static_cast<double_t>(n);
         auto x = start - inc;
-        std::vector<double> results(n);
+        std::vector<double_t> results(n);
         for (auto& v : results) {
             v = (x += inc);
         }
